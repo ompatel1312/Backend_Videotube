@@ -1,3 +1,7 @@
 this is backend project 
 
+PAKAJES USE AND REASON
 
+1)BECRYPT-TO STORE PASSWORD INCRYPTION IN DATA BASE
+2)mongoose-paginate-v2-USE TO WRITE
+3)JWT-
