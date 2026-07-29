@@ -1,7 +1,7 @@
 import {asyncHandler} from '../utils/asyncHandler.js';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
-import {User} from "../models/user.model.js";
+import User from "../models/user.model.js";
 import { uploadImageOnCloudinary } from '../utils/cloudinary.js';
 const registerUser=asyncHandler(async(req,res)=>{
     //get user details from frontend
@@ -24,7 +24,7 @@ console.log("user details from frontend",fullName,email,username,password);
         throw new ApiError(400,"All fields are required");
     }
 
-    const exitedUser=User.findOne({
+    const exitedUser=await User.findOne({
         $or:[{username},{email}]
     })
 
@@ -33,29 +33,46 @@ console.log("user details from frontend",fullName,email,username,password);
         throw new ApiError(409,"User already exists with this username or email");
     }
 
-   const avatarLocalPath= req.files?.avatar[0]?.path;
-   const coverImagePath=req.files?.coverPhoto[0]?.path;
+//    const avatarLocalPath= req.files?.avatar[0].path;
+//    const coverImagePath=req.files?.coverImage[0].path;
 
-   if(avavtarLocalPath){
-    throw new ApiError(400,"Avatar is required");
-   }
+//    console.log(req.files);
+//    if(!avatarLocalPath){
+//     throw new ApiError(400,"Avatar is required");
+//    }
+
+const avatarLocalPath = req.files?.avatar?.[0]?.path;
+const coverImageLocalPath = req.files?.coverImage?.[0]?.path;
+
+console.log("FILES:", req.files);
+console.log("AVATAR PATH:", avatarLocalPath);
+
+if (!avatarLocalPath) {
+    throw new ApiError(400, "Avatar is required");
+}
+
 
  const avatar=await uploadImageOnCloudinary(avatarLocalPath) ;
- const coverImage= await uploadImageOnCloudinary(coverImagePath);
+ const coverImage= await uploadImageOnCloudinary(coverImageLocalPath);
 
  if(!avatar)
  {
         throw new ApiError(400,"Avatar is required");
  }
+ //debuging
+//     console.log("avatar object:", avatar);
+// console.log("avatar url:", avatar?.url);
+// console.log("coverImage object:", coverImage);
+// console.log("coverImage url:", coverImage?.url);
 
  const user= await User.create(
     {
         fullName,
-        avatar:avatar.url,
+        avatar: avatar.url, 
         coverImage:coverImage?.url || "",
         email,
         password,
-        username:username.toLowerCaase()
+        username:username.toLowerCase()
     }
 
      

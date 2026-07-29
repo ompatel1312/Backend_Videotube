@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema({
         type:String,
     },
     watchHistory:{
-        type:schema.Types.ObjectId,
+        type:Schema.Types.ObjectId,
         ref:"Video"
     },
     password:{
@@ -48,8 +48,7 @@ const userSchema = new mongoose.Schema({
 userSchema.pre("save",async function (next) {
     if(!this.isModified("password")) return next();
 
-    this.password=await bcrypt.hash(this.password,10)
-    next()
+    this.password=await bcrypt.hash(this.password,10);
 })
 
 userSchema.method.isPasswordCorrect=async function(password)
